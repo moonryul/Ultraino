@@ -103,7 +103,7 @@ public class TransControlPanel extends javax.swing.JPanel {
 
         jLabel1.setText("Phase");
 
-        phaseSpinner.setModel(new javax.swing.SpinnerNumberModel(Integer.valueOf(0), Integer.valueOf(0), null, Integer.valueOf(1)));
+        phaseSpinner.setModel(new javax.swing.SpinnerNumberModel(0, 0, null, 1));
         phaseSpinner.setToolTipText("current phase - in divisions");
         phaseSpinner.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
@@ -113,6 +113,11 @@ public class TransControlPanel extends javax.swing.JPanel {
 
         durationsText.setText("1 0");
         durationsText.setToolTipText("periods sequence to be sent");
+        durationsText.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                durationsTextActionPerformed(evt);
+            }
+        });
 
         durationsButton.setText("Durations");
         durationsButton.setToolTipText("sends the durations - not supported by all the devices");
@@ -257,6 +262,7 @@ public class TransControlPanel extends javax.swing.JPanel {
     
     private void durationsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_durationsButtonActionPerformed
         if (device != null){
+            //int[] parseIntArray(final String text,final String separator)
             final int[] durations = Parse.parseIntArray( durationsText.getText(), " ");
             device.sendDurations(durations);
         }
@@ -274,6 +280,10 @@ public class TransControlPanel extends javax.swing.JPanel {
         }
     }//GEN-LAST:event_multiplexButtonActionPerformed
 
+    private void durationsTextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_durationsTextActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_durationsTextActionPerformed
+
 
     private DeviceConnection getDeviceConnection(int port){
         final int index = deviceCombo.getSelectedIndex();
@@ -281,12 +291,13 @@ public class TransControlPanel extends javax.swing.JPanel {
         
         if (index == 0){ //  ArduinoMEGA64
             dc = new ArduinoMEGA64(); 
+            
         }else if (index == 1){ //  SimpleFPGA
             dc = new SimpleFPGA();
         }else if (index == 2){ // NANO
             dc = new ArduinoNano();
         }else if (index == 3){ // MEGA Anim
-            dc = new ArduinoMEGA64_Anim();
+            dc = new ArduinoMEGA64_Anim(); // animate a sequence of patterns (frames)
         }else if (index == 4){ // Nano16
             dc = new ArduinoNano16();
         }else if (index == 5){ // Simple FPGA 128
@@ -327,7 +338,7 @@ public class TransControlPanel extends javax.swing.JPanel {
     }
     
     public void sendPattern(){
-        sendPattern(true);
+        sendPattern(true); // true = swap buffers
     }
     
     
@@ -374,13 +385,18 @@ public class TransControlPanel extends javax.swing.JPanel {
                 }
             }
         } else {
+            
             device.sendPattern(getTransducers());
-            if (swapBuffers) {
+               // device refers to an object of ArduinoMega64 or other class            
+            if (swapBuffers) { 
+                // usually swapBuffers when a sequence of patterns (say, 32 of them) are sent,
+                // so that the newly received patterns may be emitted from Arduino to the transducers.
+                
                 device.switchBuffers();
             }
         }
              
-    }
+    }//sendPattern(final boolean swapBuffers)
     
     public void sendAnimFrame(int frame) {
         if (device != null){
@@ -408,9 +424,11 @@ public class TransControlPanel extends javax.swing.JPanel {
     public void sendAnim(final List<AnimKeyFrame> keyFrames){
         if (device != null){
             device.sendAnim(keyFrames);
-            device.switchBuffers();
+            device.switchBuffers(); 
+               // all the patterns (with whatever siz) are sent;
+               // So, swap the buffers, so that the reading buffer may become the emitting buffer
         }
-    }
+    }//sendAnim(final List<AnimKeyFrame> keyFrames)
 
     public void offNextOnTransducerMenuActionPerformed() {                                                        
         final List<Entity> selection = mf.getSelection();

@@ -180,7 +180,7 @@ public class ArduinoMEGA64_Anim extends ArduinoNano{
         //(bReceived & 0x11000000) >> (durationsWrittingIndex % 4 * 2)
         
         for(int i = 0; i < n; ++i){
-            final int d = durations[i];
+            final int d = durations[i]; // The max duration is 1111 = 1+2+4+8 = 15
             serial.writeByte( COMMAND_DURATION | ((d << 0) & 0xC0) );
             serial.writeByte( COMMAND_DURATION | ((d << 2) & 0xC0) );
             serial.writeByte( COMMAND_DURATION | ((d << 4) & 0xC0) );

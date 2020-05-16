@@ -188,6 +188,9 @@
         <Property name="text" type="java.lang.String" value="1 0"/>
         <Property name="toolTipText" type="java.lang.String" value="periods sequence to be sent"/>
       </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="durationsTextActionPerformed"/>
+      </Events>
     </Component>
     <Component class="javax.swing.JButton" name="durationsButton">
       <Properties>
