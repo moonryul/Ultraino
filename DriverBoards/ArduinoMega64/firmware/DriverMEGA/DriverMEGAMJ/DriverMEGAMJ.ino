@@ -1,29 +1,20 @@
-/*Please do not forget to In the public interface of Program Files (x86)\Arduino\hardware\arduino\avr\cores\arduino\HardwareSerial.h
-add the following inline functions
+/*Please do not forget to add the following inline functions
 
 inline bool _dataAvailable() {return _rx_buffer_head != _rx_buffer_tail; }
 inline byte _peekData() { return _rx_buffer[_rx_buffer_tail]; }
 inline void _discardByte() { _rx_buffer_tail = (rx_buffer_index_t)(_rx_buffer_tail + 1) % SERIAL_RX_BUFFER_SIZE; }
-*/
 
-
-/* 
-#ifndef F_CPU
-    #define F_CPU 16000000 = 16MHz// or
-#endif
-//=====================================================================
-//                             INCLUDE FILES
-//=====================================================================
-#include <avr/io.h>
-#include <avr/interrupt.h>
-
-
-��ó: https://calltome.tistory.com/entry/Atmel-Studio-FCPU-���� [�̷�����]
+In the public interface of Program Files (x86)\Arduino\hardware\arduino\avr\cores\arduino\HardwareSerial.h
 
 */
+
+
 
 #include <avr/sleep.h>
 #include <avr/power.h>
+
+//#include <SoftwareSerial.h>
+
 
 #define N_PATTERNS 32
 
@@ -36,11 +27,11 @@ inline void _discardByte() { _rx_buffer_tail = (rx_buffer_index_t)(_rx_buffer_ta
 
 //ports A C L B K F H D G J ; Port E is not used for data ports; 
 
-# The four types of byte message:
-#        MSB (command)    LSB (board number: 0 means all borads)     Data Command or Control Command
+//# The four types of byte message:
+//#        MSB (command)    LSB (board number: 0 means all borads)     Data Command or Control Command
 
-# (1)     0000                0000 : Switch Patterns                    Control Command
-#         This means: Switch/swap the pattern buffers, 
+//# (1)     0000                0000 : Switch Patterns                    Control Command
+//#         This means: Switch/swap the pattern buffers, 
 //                  so that the new patterns (pattern 0, pattern 1,..., pattern 31) may be emitted
 //        (i)  The ith pattern (received from Ultraino) specifies the one period (with 10 steps) for all of the 10 ports
 //        (ii) The ith pattern (period) will be repeated by the number of times specifed in the ith duration, specifed by the 
@@ -48,19 +39,19 @@ inline void _discardByte() { _rx_buffer_tail = (rx_buffer_index_t)(_rx_buffer_ta
 //        (iii) One pattern with a given duration (number of repeating the period) represents a periodic singal
 //              which lasts  for the given duration
 //              
-# (2)     0001                0000 : Switch Durations                  Control  Command
-#         (2) means: Switch/swap the duration buffers, so that the new durations 
-#                                        (duration 0, duration 1,..., duration 31) may be emitted
-#         
-# (3)     XX11                0000 : Add Duration XX                   Data    Command
-#            (3) means: Add/Specify the duration of the current pattern in the duration buffer#          
+//# (2)     0001                0000 : Switch Durations                  Control  Command
+//#         (2) means: Switch/swap the duration buffers, so that the new durations 
+//#                                        (duration 0, duration 1,..., duration 31) may be emitted
+//#         
+//# (3)     XX11                0000 : Add Duration XX                   Data    Command
+//#            (3) means: Add/Specify the duration of the current pattern in the duration buffer#          
 
-# (4)     XXXX                YYYY: Add Pattern [XXXX to Board YYYY]   Data    Command
-#            (4) means: Add/Specify four bits (XXXX) [half byte] of pattern (signals to the transducers) to the pattern buffer
-#                To fill one pattern (one period) for all the ports, we need 10 * 10 bytes (N_DIV * N_PORT).
-#                It means that we need 100 bytes / 0.5 byte = 200 Add Pattern messages from Ultraino. Be careful that
-#                the Ultraino paper and the Arduino code do not explain this in details. You need to read between the lines,
-#                which can be detected by those who understand message sending and receiving at low levels.
+//# (4)     XXXX                YYYY: Add Pattern [XXXX to Board YYYY]   Data    Command
+//#            (4) means: Add/Specify four bits (XXXX) [half byte] of pattern (signals to the transducers) to the pattern buffer
+//#                To fill one pattern (one period) for all the ports, we need 10 * 10 bytes (N_DIV * N_PORT).
+//#                It means that we need 100 bytes / 0.5 byte = 200 Add Pattern messages from Ultraino. Be careful that
+//#                the Ultraino paper and the Arduino code do not explain this in details. You need to read between the lines,
+//#                which can be detected by those who understand message sending and receiving at low levels.
 
 #define COMMAND_SWITCH 0b00000000  // This is the Switch Buffers
 #define COMMAND_DURATION 0b00110000 
@@ -100,8 +91,15 @@ void setup()
 //PORTD is the register for the state of the outputs. For example;
 //PORTD = B10101000; // sets digital pins 7,5,3 HIGH
 
-  DDRA = DDRC = DDRL = DDRB = DDRK = DDRF = DDRH = DDRD = DDRG = DDRJ = 0xFF;
-  
+// PORTB |= (1<<PB2); //set bit 2 of Port B, where PB2 is defined to be 2
+// PORTB &= ~(1<<PB1); //clear bit 1 of Port B, where PB1 is defined to be 1
+// In the setting below, do not do anything for pin 18 (D3) and 19 (D2), as they are used for Tx and Rx
+
+ DDRA = DDRC = DDRL = DDRB = DDRK = DDRF = DDRH = DDRD = DDRG = DDRJ = 0xFF;
+ // modified by MJ
+ DDRD != (1 << PD3); // set D3 (18) = Tx to 1
+ DDRD &= ~(1 << PD2); // set D2 (19) = Rx to 0
+   
   // Set all of them to zero value
   // The PORT register controls whether the pin is HIGH or LOW
   PORTA = PORTC = PORTL = PORTB = PORTK = PORTF = PORTH = PORTD = PORTG = PORTJ = 0x00;
@@ -245,6 +243,29 @@ Pin 46, 45 and 44:: controlled by timer 5
   //power_usart0_disable();
 
   Serial.begin(115200);
+  Serial1.begin(115200);
+
+  // Serial Communication protocol:
+  // https://www.deviceplus.com/arduino/arduino-communication-protocols-tutorial/
+  //For TX, any pin can be used. For RX, only interrupt-enabled pins can:
+// so only the following can be used for RX: 10, 11, 12, 13, 50, 51,
+//52, 53, A8 (62), A9 (63), A10 (64), A11 (65), A12 (66), A13 (67), A14 (68), A15 (69).
+
+//https://books.google.co.kr/books?id=_IWHCAAAQBAJ&pg=PT336&lpg=PT336&dq=softwareserial+RX+TX+usable+pins&source=bl&ots=TJV-BWHcWr&sig=ACfU3U0SFYy25ekRk4ed8jGxeqo5vgJGdg&hl=en&sa=X&ved=2ahUKEwiS4MO9jL3pAhULfnAKHXL0BVkQ6AEwCXoECAoQAQ#v=onepage&q=softwareserial%20RX%20TX%20usable%20pins&f=false
+
+  //int softRx = ;
+  //int softTx = ;
+  //SoftwareSerial softSerial(softRx, softTx); // RX, TX
+   // set the data rate for the SoftwareSerial port
+  //softSerial.begin(115200);
+
+  // you can use softSerial.print()
+  //SerialSoftware:
+  // The SoftwareSerial library has been developed to allow serial communication
+  //on other digital pins of the Arduino, using software to replicate the functionality 
+  //(hence the name "SoftwareSerial").
+  //It is possible to have multiple software serial ports with speeds up to 115200 bps.
+  //A parameter enables inverted signaling for devices which require that protocol.
 
   byte byteReceived = 0;
 
@@ -297,7 +318,7 @@ Pin 46, 45 and 44:: controlled by timer 5
   bool returnToFirstPattern = false;
  
 
-LOOP
+LOOP:
 
 // The loop reads the data from the sender (from the serial port) 
 // and emits the sequence of message pattens to the transducer
@@ -409,7 +430,7 @@ isCommitDurations = byteReceived == COMMAND_COMMITDURATIONS;
   // 5th step (division), 10 ports; the 0th step of emittingPointerL is the 5th of the whole buffer
 
 //  is the received byte the ADD DURATION Command? 
-isDuration = (bReceived & MASK_DURATION) == COMMAND_DURATION; 
+isDuration = (byteReceived & MASK_DURATION) == COMMAND_DURATION; 
    //  MASK_DURATION == 0b00111111; COMMAND_DURATION = 0b00110000 
 
 //nextPattern = currentPattern + 1;
@@ -558,6 +579,36 @@ if (byteReady)
       //  Print the total number of patterns in the emittingPointerH; the number of patterns in 
       // the emitting buffer is less or equal to 32.
 
+      // MJ: Print the "voltage" pattern for all of the 64 transducers:
+      //
+
+      for ( int i =0; i < N_PATTERNS; i++ ) {
+        // if the duration of the ith pattern is 0, it means it is the "stop frame".
+        // In that case, break out of the for loop because we reached the end of the
+        // sequence of patterns before reaching N_PATTERNS.
+
+        if ( durations[i] == 0 ) {
+          break;
+        }
+
+        // print the ith pattern; 
+        Serial1.print(i + "th pattern:\n");
+        
+        // The pattern has N_PORTS (10)  bytes for N_PORTS ports each of N_DIVS (10) steps.
+        for (int s =0; s < N_DIVS; s++ ) {
+          Serial1.print(s + "th step:\n");
+          
+          for (int p =0; p <N_PORTS; p++) {
+            byte byteData = emittingPointerH[ i* (N_DIVS*N_PORTS) + s*N_PORTS + p];
+            Serial1.print(byteData, BIN); // print byteData in bit stream
+            // Serial.print(val, BIN): val = any datatype, BIN= print in binary form
+            Serial1.print("|");
+            
+          } // innermost for
+          Serial1.print("\n"); // new line
+        } // inner for
+      } // outermost for
+
     }//  if ( isSwitch ) // swap buffers
 
  else if  ( isPatternForMe )
@@ -568,12 +619,12 @@ if (byteReady)
  
         if (writtingIndex % 2 == 0) { // writtingIndex =0, 2, 4,6...
           
-          readingPointerH[writtingIndex / 2] = bReceived & 0xF0; 
+          readingPointerH[writtingIndex / 2] = byteReceived & 0xF0; 
            // assign the higher 4 bits of the received byte X1X1X1X1 (from  X1X1X1X1 0001)
            //    to the higher 4 bits at the location writtingIndex/2 =0,1,2,...
 
         } else { // writtingIndex =1, 3, 5,7...==> writtingIndex / 2 = 0,1,2,3....
-          readingPointerH[writtingIndex / 2] |= (bReceived >> 4); 
+          readingPointerH[writtingIndex / 2] |= (byteReceived >> 4); 
           // assign the higher 4 bits of the received byte (from X2X2X2X2 0001) 
           //      to the lower 4 bits at the location writtingIndex/2 =0,1,2,...
        // The above if else statements means that the arduino receives "X1X1X1X1 0001" and "X2X2X2X2 0001" in a pair
@@ -581,7 +632,7 @@ if (byteReady)
        // The port sequence in a single pattern is:  A C L B K F H D G J; 
        // So, a sequence of one byte messages of the form  "X1X1X1X1 X2X2X2X2" will be assigned to A, C, ...J
        //  from the reading buffer after it has become emitting buffer. 
-          ...
+        //  ...
         }
 
         ++writtingIndex; // this index is incremented for each pattern byte

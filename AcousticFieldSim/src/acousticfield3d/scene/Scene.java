@@ -1,4 +1,5 @@
-package acousticfield3d.scene;
+package acousticfield3d.scene; 
+  // It means that all things in this file is built into package  acousticfield3d.scene
 
 import acousticfield3d.math.Frustrum;
 import acousticfield3d.math.M;
@@ -12,11 +13,25 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+//MJ, 202/5/18, debugging    
+ import acousticfield3d.simulation.Transducer;
+    
 /**
  *
  * @author Asier
  */
+
+
+
+
+
+ //"%10s" Format a string with the specified number of characters and also right justify. "%-10s"
+ //Format a string with the specified number of characters and also left justify.
+
 public class Scene {
+    
+   
+    
     Camera camera;
     Light light;
     ArrayList<MeshEntity> entities;
@@ -24,6 +39,9 @@ public class Scene {
     MeshEntity cubeHelper;
   
     public Scene() {
+        
+     
+        
         camera = new Camera();
         light = new Light();
         entities = new ArrayList<>();
@@ -101,9 +119,13 @@ public class Scene {
     }
     
   
+       
     public void addTransducersFromSimulation(Simulation simulation){
         entities.addAll( simulation.getTransducers() );
-    }
+        
+  
+  
+    } // addTransducersFromSimulation
 
     public Camera getCamera() {
         return camera;

@@ -149,6 +149,11 @@ public class AssignTransducers extends javax.swing.JFrame implements SerialComms
         });
 
         phaseCorrectionCheck.setText("phaseCorr");
+        phaseCorrectionCheck.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                phaseCorrectionCheckActionPerformed(evt);
+            }
+        });
 
         erasePhaseCorrectionButton.setText("Res");
         erasePhaseCorrectionButton.addActionListener(new java.awt.event.ActionListener() {
@@ -183,6 +188,11 @@ public class AssignTransducers extends javax.swing.JFrame implements SerialComms
         maxAmpText.setText("820");
 
         onlyPolCheck.setText("OnlyPolarity");
+        onlyPolCheck.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                onlyPolCheckActionPerformed(evt);
+            }
+        });
 
         phaseRefText.setText("0");
 
@@ -221,6 +231,11 @@ public class AssignTransducers extends javax.swing.JFrame implements SerialComms
         exportDivsText.setText("32");
 
         offsetsPhaseExportText.setText("offsets");
+        offsetsPhaseExportText.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                offsetsPhaseExportTextActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -514,6 +529,8 @@ public class AssignTransducers extends javax.swing.JFrame implements SerialComms
             
             fakeTransducers.get(i).setAmplitude(1);
             mf.transControlPanel.sendPattern( fakeTransducers );
+               // just checking; do not really send data to the transducers.
+               // NO switch buffer is called
             fakeTransducers.get(i).setAmplitude(0);
             
             Thread.sleep(MILLI_WAIT_FOR_DRIVER );
@@ -719,6 +736,18 @@ public class AssignTransducers extends javax.swing.JFrame implements SerialComms
         
         TextFrame.showText("Phase corrections", sb.toString(), this);
     }//GEN-LAST:event_exportPhaseCorrButtonActionPerformed
+
+    private void offsetsPhaseExportTextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_offsetsPhaseExportTextActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_offsetsPhaseExportTextActionPerformed
+
+    private void phaseCorrectionCheckActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_phaseCorrectionCheckActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_phaseCorrectionCheckActionPerformed
+
+    private void onlyPolCheckActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_onlyPolCheckActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_onlyPolCheckActionPerformed
 
     @Override
     public void rxMsg(byte[] data, int len) {

@@ -16,8 +16,14 @@ public class SimplePhaseAlgorithms {
     public static void focus(final Transducer t, final Vector3f target, float speedOfSound){
             final float distance = target.distance( t.getTransform().getTranslation() );
             final float waveLength = speedOfSound / t.getFrequency();
-            final float targetPhase = (1.0f - M.decPart(distance / waveLength) ) * 2.0f * M.PI;
-            t.setPhase(targetPhase / M.PI );
+            final float targetPhase = ( 1.0f - M.decPart(distance / waveLength)  ) * 2.0f * M.PI;
+            //  M.decPart (a) = return a - ((int)a);
+            //  Derivation of targetPhase: (L_cf - L_tf) * ( 2pi/lambda ) = phaseDiff
+            // 
+            t.setPhase(targetPhase / M.PI ); // targetPhase is in radian, 
+              // The unit of the phase used in this system is pi. So phase 2 means 2 * pi 
+               
+                                              
     }
     
     public static void focus(final List<Transducer> trans, final Vector3f target, float speedOfSound){

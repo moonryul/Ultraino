@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+//import java.lang; // MJ: Math
 /**
  *
  * @author am14010
@@ -54,6 +55,15 @@ public class ArduinoMEGA64 extends ArduinoNano{
                         
             final int n = t.getDriverPinNumber();
             // n is the position of the "pin" associated with transducer t.
+            
+            // how to control the phase and amplitude inPWM:  
+            // One cycle of 40-kHz rectangular wave is divided into 10 segments.
+            // The phase is controlled by the POSITION of the HIGH ( 24 V) period within the 10 segments, 
+            // and the amplitude by the DURATION of the HIGH period. 
+           
+            // For each focus position and each transducer, the corresponding phase is determined
+            // based on the distance between them.
+            
             if (n >= 0) {
                 final float amplitude = key.getTransAmplitudes().get(t);
                 final float fphase = key.getTransPhases().get(t);
@@ -67,14 +77,28 @@ public class ArduinoMEGA64 extends ArduinoNano{
 
                 final int targetByte = hardwarePin / 8; // the bit for hardwarePin will be in 
                   // "targetByte" position in data byte array.
+                  
                 final byte value = (byte) ((1 << (hardwarePin % 8)) & 0xFF);
-                 // hardwarePin % 8 will refer to the bit position within the target byte.
+                
+                 // MJ: hardwarePin % 8 will refer to the bit position within the target byte.
                  // 1 << (hardwarePin % 8) will produce the bit string in which the position
                  // with 1 will be the bit position of the hardWarePin
+                 
                 final int phase = Transducer.calcDiscPhase( fphase + t.getPhaseCorrection(), nDivs);
+                
+                // calcDiscPhase ( phase) = 
+                // xPhase = Math.round(phase * divs / 2) % divs;
+                //  while (xPhase < 0) {
+                //       xPhase += divs;
+                //   }
 
                 //TODO the divs to amplitude is not going to be linear but it will do for the moment
-                final int ampDivs = M.iclamp(Math.round(amplitude * nDivs / 2), 0, nDivs);
+                // MJ: https://masteringelectronicsdesign.com/how-to-derive-the-rms-value-of-pulse-and-square-waveforms/
+                // Vrms = Vp sqrt(D), where D is t1/T = the duty cycle.
+                // The default value of amplitude is 1.0 => Half of the period, nDivs/2, are occupied by HIGH
+                
+                final int ampDivs = M.iclamp(Math.round( amplitude * nDivs / 2), 0, nDivs);
+                
                 // is ampDvis the duty cycle of PWM?
                 for (int i = 0; i < ampDivs; ++i) {
                     final int d = (i + phase + phaseCompensation) % nDivs;
@@ -156,6 +180,7 @@ public class ArduinoMEGA64 extends ArduinoNano{
         }
       
        // Calculate Data Bytes: the same as calcDateBytes()
+       
        final int nTrans = Transducer.getMaxPin(transducers) + 1;
        final int signalsPerBoard = getSignalsPerBoard(); // 64 = 8 * 8
        final int nBoards = (nTrans-1) / signalsPerBoard + 1;
@@ -177,10 +202,13 @@ public class ArduinoMEGA64 extends ArduinoNano{
                final int softwarePin = n % signalsPerBoard; // n%64=0,1,2,..63
                
                final int hardwarePin = PORT_MAPPING[softwarePin];
+                   // hardwarePin = portIndex * 8 + bitIndex, where portIndex =0,...9, bitIndex =0,..,7
+                   // PortIndex =  0 1 2 3 4 5 6 7 8 9
+                   // PortName  =  A C L B K F H D G J
                final int phaseCompensation = PHASE_COMPENSATION[softwarePin];
                
                final int targetByte = hardwarePin / 8; // = port index (byte index) of hardware pin
-               final byte pinIndex = (byte)((1 << (hardwarePin % 8)) & 0xFF); 
+               final byte bitPatternOfByte = (byte)((1 << (hardwarePin % 8)) & 0xFF); 
                    // = pin (bit) index within the port of hardware pin
                
                final int phase = Transducer.calcDiscPhase(t.getPhase() + t.getPhaseCorrection(), nDivs);
@@ -189,15 +217,88 @@ public class ArduinoMEGA64 extends ArduinoNano{
                
                for (int i = 0; i < ampDivs; ++i) {
                    final int d = (i + (phase + phaseCompensation) ) % nDivs;
-                   data[ board* bytesPerBoard + targetByte + d * nDivs] |= pinIndex;                   
+                   data[ board* bytesPerBoard + targetByte + d * nDivs] |= bitPatternOfByte;                   
                 
                }
                // data[0+targetByte], data[10+targetByte], data[2*10+targetByte],
                // ,....,data[9*10+targetByte], where targetByte goes from 0 to 9
-           }
+           }//if(n >= 0)
        }//   for(Transducer t : transducers)
+       
        // end of   Calculate Data Bytes: the same as calcDateBytes()
        
+       // Print data[0..nDivs*nPorts].100 bytes, 10 bytes for each of the 10 steps (divisions)
+       // It is assumed that nBoards = 1
+          // PortIndex =  0 1 2 3 4 5 6 7 8 9
+                   // PortName  =  A C L B K F H D G J
+                   
+
+       
+       for (int k =0; k < nDivs; k++)  {
+            System.out.println( String.format("%2s","|" ) );
+       
+           for (int l =0; l < nPorts; l++) {                   
+               byte bitPattern = data[ k* nPorts + l]; // bitPattern of Port l at step k
+               System.out.println(String.format("%8s", Integer.toBinaryString( (bitPattern + 256) % 256 ) )
+                         .replace(' ', '0'));
+               System.out.println( String.format("%2s","|" ) );                
+               
+           }//for
+           System.out.print("\n" );          
+      
+       } // for 
+       
+       //Integer.toBinaryString:  can be performed on integer types and its variants - that is
+       //  byte (8 bit)
+       //  short (16 bit)
+       //  int (32 bit)
+       // long (64 bit)
+       // and even char (16 bit)
+       
+       
+       // Print the voltage bit patterns for transducers by using Port Name + BitIndex
+       String[] portName = new String[] { "A", "C", "L", "B", "K","F","H","D","G","J"};
+     
+    
+       for (int k =0; k < nDivs; k++)  {
+           System.out.format("%2s","|"  );
+           System.out.format("%5s1%s:","step=", k );  
+           for (int l =0; l < nPorts; l++) {    
+                              
+               byte byteData = data[ k* nPorts + l ]; // bitData l at step k
+               
+               for (int b=0; b<8; b++) {
+                   byte shiftedByte = (byte) (byteData >> b); // the result of shiting byteData by b bits
+                   if(  (shiftedByte &  0x01) == 0x01 ) {
+                     System.out.format("%1s%1s", portName[l], b);
+                     System.out.format("%1s","|" );
+                   } //if
+               } // innermost for
+               
+           }//inner for
+           System.out.print("\n" );          
+      
+       } // outermost for 
+       
+          
+       // Print the rms of the nth bit of the mth port over the period (10 steps/Divs)
+       // https://masteringelectronicsdesign.com/how-to-derive-the-rms-value-of-pulse-and-square-waveforms/
+       //P0 = 0.17 Pa at 1 m per 1 Vpp of a square excitation signal,
+       // A = The actual Vpp of the square excitation signal.
+       
+       // t.amplitude = x [Vpp]
+      // float dutyCycle = (float) Math.sqrt(3/nDivs);
+       
+      // for (int m =0; m < nPorts; m++)  {
+      //     for (int n=0; n<8; n++) {
+     //        for (int s=0; s < nDivs; s++) {         
+     //          byte bitPattern = data[ m + nDivs + n];
+     //        }  
+               
+     //      }
+           
+     //  }
+           
        // Send pattern byte commands for all the patterns of al boards
        for(int i = 0; i < nBoards; ++i){ // nBoards=1 => one pattern on one board
            for(int j = 0; j < bytesPerBoard; ++j){ // j =0..99
@@ -272,7 +373,14 @@ public class ArduinoMEGA64 extends ArduinoNano{
     }
     
     
-    public static final int[] PORT_MAPPING = {51, 52, 53, 54, 28, 29, 30, 31, 47, 46, 45, 44, 43, 42, 41, 40, 56, 57, 58, 59, 48, 49, 72, 69, 39, 38, 37, 36, 35, 34, 33, 32, 21, 23, 65, 63, 9, 11, 13, 15, 20, 22, 64, 66, 8, 10, 12, 14, 24, 25, 26, 27, 16, 17, 18, 19, 7, 6, 5, 4, 3, 2, 1, 0};
+    public static final int[] PORT_MAPPING = {51, 52, 53, 54, 28, 29, 30, 31, 
+                                              47, 46, 45, 44, 43, 42, 41, 40,
+                                              56, 57, 58, 59, 48, 49, 72, 69,
+                                              39, 38, 37, 36, 35, 34, 33, 32,
+                                              21, 23, 65, 63, 9, 11, 13, 15,
+                                              20, 22, 64, 66, 8, 10, 12, 14,
+                                              24, 25, 26, 27, 16, 17, 18, 19,
+                                              7,  6,   5,  4,  3,  2,  1,  0};
     //public static final int[] PHASE_COMPENSATION = {0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
     public static final int[] PHASE_COMPENSATION = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 }

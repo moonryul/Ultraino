@@ -233,7 +233,7 @@ public class TransControlPanel extends javax.swing.JPanel {
     
     
     private void sendButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sendButtonActionPerformed
-        sendPattern();
+        sendPattern(); // == sendPattern(true): swap buffer
     }//GEN-LAST:event_sendButtonActionPerformed
 
     private void switchButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_switchButtonActionPerformed
@@ -369,6 +369,7 @@ public class TransControlPanel extends javax.swing.JPanel {
     }
     
     public void sendPattern(final boolean swapBuffers){
+         
         if (device == null){
             return;
         }        
@@ -386,7 +387,7 @@ public class TransControlPanel extends javax.swing.JPanel {
             }
         } else {
             
-            device.sendPattern(getTransducers());
+            device.sendPattern( getTransducers() );
                // device refers to an object of ArduinoMega64 or other class            
             if (swapBuffers) { 
                 // usually swapBuffers when a sequence of patterns (say, 32 of them) are sent,
@@ -408,6 +409,8 @@ public class TransControlPanel extends javax.swing.JPanel {
             }
         }
     }
+   
+     // the following sendPattern( fakedTransducers) is used only for checking
     
     public void sendPattern(final List<Transducer> trans){
         if (device != null){

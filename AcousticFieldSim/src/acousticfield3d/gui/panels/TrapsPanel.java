@@ -58,6 +58,11 @@ public class TrapsPanel extends javax.swing.JPanel {
         focusCheck.setSelected(true);
         focusCheck.setText("focus");
         focusCheck.setToolTipText("focus on the point");
+        focusCheck.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                focusCheckActionPerformed(evt);
+            }
+        });
 
         buttonGroup1.add(twinRadio);
         twinRadio.setText("twin");
@@ -88,6 +93,11 @@ public class TrapsPanel extends javax.swing.JPanel {
 
         calcClickCheck.setText("calc");
         calcClickCheck.setToolTipText("calculate new traps when clicking on a slice");
+        calcClickCheck.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                calcClickCheckActionPerformed(evt);
+            }
+        });
 
         jLabel3.setText("Pressure");
 
@@ -96,6 +106,11 @@ public class TrapsPanel extends javax.swing.JPanel {
 
         pressureBText.setText("1500");
         pressureBText.setToolTipText("set this number as you wish, it is for getting percentages on the left text");
+        pressureBText.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                pressureBTextActionPerformed(evt);
+            }
+        });
 
         pressureDivText.setEditable(false);
         pressureDivText.setText("3");
@@ -103,6 +118,11 @@ public class TrapsPanel extends javax.swing.JPanel {
 
         calcForceCheck.setText("calc force");
         calcForceCheck.setToolTipText("calculates forces as well as pressure");
+        calcForceCheck.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                calcForceCheckActionPerformed(evt);
+            }
+        });
 
         xForceText.setText("1500");
 
@@ -112,15 +132,35 @@ public class TrapsPanel extends javax.swing.JPanel {
 
         calcLaplacianCheck.setText("calc lap");
         calcLaplacianCheck.setToolTipText("calculates laplacians as well as pressures");
+        calcLaplacianCheck.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                calcLaplacianCheckActionPerformed(evt);
+            }
+        });
 
         sendCheck.setText("send");
         sendCheck.setToolTipText("sends the phases to the devices when clicking on a slice");
+        sendCheck.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                sendCheckActionPerformed(evt);
+            }
+        });
 
         dragCheck.setText("drag");
         dragCheck.setToolTipText("calculates & send when dragging the mouse on a slice");
+        dragCheck.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                dragCheckActionPerformed(evt);
+            }
+        });
 
         genAnimCheck.setText("add key frame");
         genAnimCheck.setToolTipText("adds a key frame when clicking on a slice");
+        genAnimCheck.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                genAnimCheckActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -232,6 +272,38 @@ public class TrapsPanel extends javax.swing.JPanel {
         
         mf.needUpdate();
     }//GEN-LAST:event_calcButtonActionPerformed
+
+    private void calcClickCheckActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_calcClickCheckActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_calcClickCheckActionPerformed
+
+    private void sendCheckActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sendCheckActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_sendCheckActionPerformed
+
+    private void dragCheckActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_dragCheckActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_dragCheckActionPerformed
+
+    private void genAnimCheckActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_genAnimCheckActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_genAnimCheckActionPerformed
+
+    private void pressureBTextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pressureBTextActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_pressureBTextActionPerformed
+
+    private void calcForceCheckActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_calcForceCheckActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_calcForceCheckActionPerformed
+
+    private void calcLaplacianCheckActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_calcLaplacianCheckActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_calcLaplacianCheckActionPerformed
+
+    private void focusCheckActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_focusCheckActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_focusCheckActionPerformed
 
     
     

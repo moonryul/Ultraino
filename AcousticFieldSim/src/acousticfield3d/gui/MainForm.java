@@ -67,6 +67,48 @@ import java.awt.image.BufferedImage;
 import javax.swing.JFrame;
 import javax.swing.JTextField;
 
+
+//classes when declared without any specified keyword is recognised as package-private, 
+//means the class can only be used inside the package.
+
+ class TransItem {
+    
+    public String name;
+    public float amplitude;
+    public float phase;
+    public int orderNumber;
+    public int driverPinNumber;
+    
+ //   public TransItem(String name, float amplitude, float phase, 
+ //                int orderNumber, int driverPinNumber) 
+ //  {
+ //   this.name = name;
+ //   this.amplitude = amplitude;
+ //   this.phase = phase;
+ //   this.orderNumber = orderNumber;
+  //  this.driverPinNumber = driverPinNumber;
+    
+  // }
+    
+    public static void printTable(TransItem[][] table) 
+    {
+         System.out.format("cell of the able: \n");
+         System.out.format("transducer amplitude phase orderNumber driverPinNumber\n");
+                         
+        for (int i =0; i < 8; i++) {
+            for (int j=0; j < 8; j++) {
+                 System.out.format("%4s%4s%4s%3s%3s", table[i][j].name, 
+                          table[i][j].amplitude, table[i][j].phase, 
+                          table[i][j].orderNumber, table[i][j].driverPinNumber);
+                 System.out.format("|");
+            }
+            System.out.format("\n");
+        }
+          
+    }//printTable
+    
+ } // TransItem
+
 /**
  *
  * @author Asier
@@ -108,6 +150,9 @@ public final class MainForm extends javax.swing.JFrame {
     public final Config config;
     
     public MainForm(Config config) {
+        
+        System.out.format("I am here at %s", "Mainform constructor\n");
+        
         this.config = config;
  
         sliderPanel = new SliderPanel(1, true);
@@ -130,6 +175,8 @@ public final class MainForm extends javax.swing.JFrame {
         
         holoPatternsForm = new HoloPatternsForm(this);
         simForm = new SimulationConfigForm(this);
+        
+        // this is the object of MainForm
         addTransducersForm = new AddTransducersForm(this, simulation, scene);
         algForm = new AlgorithmsForm(this);
       
@@ -170,10 +217,13 @@ public final class MainForm extends javax.swing.JFrame {
         mainTabPanel.addTab("Move", movePanel);
         mainTabPanel.addTab("Traps", trapsPanel);
         
-        initSimulation();
+        initSimulation(); 
+    //  when member simulation is newly created, 
+    //  its members transducers, controlPoints, animations,
+    //   maskObjects, slices are empty
         
         animationThread = new BehavioursThread(scene, this);
-    }
+    } // MainForm()
     
     public void init(){
         //animationThread.start();
@@ -240,6 +290,9 @@ public final class MainForm extends javax.swing.JFrame {
         scene.adjustCameraToSimulation(simulation, getGLAspect());
     }
 
+    // GroupLayOut:
+    //https://books.google.co.kr/books?id=NYKMBAAAQBAJ&pg=PA58&lpg=PA58&dq=java+gui+Create+Sequential+Groups+Create+Parallel+Groups&source=bl&ots=x-RLg5paAa&sig=ACfU3U11xhFDeAWTYUvAiMxF0RpJsukMWA&hl=en&sa=X&ved=2ahUKEwjJxvOk8brpAhV7w4sBHTMhCgAQ6AEwCXoECAcQAQ#v=onepage&q=java%20gui%20Create%20Sequential%20Groups%20Create%20Parallel%20Groups&f=false
+    
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -1508,14 +1561,68 @@ public final class MainForm extends javax.swing.JFrame {
             simulation.sortAnimations();
             simulation.sortTransducers();
             
+                  
+ // MJ, 2020/5/18: debugging
+ // Print the informaton about the transducer array
+       
+ //  public String name;
+ //   public float amplitude; //from 0 to 1
+ //   public float phase; //in radians but divided by PI. That is, a phase of 2 means 2PI radians    
+  //  private int orderNumber;
+  //  private int driverPinNumber; //in the driver board
+   
+        TransItem[][] table; // MJ: for debugging, 2020/05/18
+        table = new TransItem[8][8]; // MJ: for debugging,  2020/05/18
+        
+        ArrayList<Transducer> transducers = simulation.getTransducers() ;
+       
+       // if (transducers.isEmpty() ) {
+       //     return;
+       // }
+       // Create objects for object array table
+       for (int k =0; k < 8; k++) {
+            for (int l=0; l < 8; l++) {
+                table[k][l] = new TransItem();
+                 
+            }
+       }
+       
+       //print  the transducers from the simulation
+        for (Transducer t :  transducers) {
+                    String name = t.name;
+                    float amplitude = t.amplitude;
+                    float phase =  t.phase; //in radians but divided by PI. That is, a phase of 2 means 2PI radians    
+                    int orderNumber = t.getOrderNumber();
+                    int driverPinNumber = t.getDriverPinNumber(); //in the driver board
+                  
+                    // get the grid coordinate in the array
+                    int i = orderNumber / 8;
+                    int j = orderNumber % 8;
+                    
+                     table[i][j].name = name ;
+                     table[i][j].amplitude = amplitude ;
+                     table[i][j].phase = phase;
+                     table[i][j].orderNumber = orderNumber ;
+                     table[i][j].driverPinNumber = driverPinNumber;
+                     
+                                
+                                      
+            }//   for (Transducer t :  transducers)
+               
+            TransItem.printTable( table );  
+           //// the end of debugger code
+                    
             initSimulation();
+               // initSimulation() using the uploaded simulation created above
+               // by  simulation = FileUtils.readCompressedObject(target);
             clearSelection();
 
             needUpdate();
-        } catch (IOException ex) {
+        } // try
+       catch (IOException ex) {
             Logger.getLogger(MainForm.class.getName()).log(Level.SEVERE, null, ex);
         }
-    }
+    } //loadSimulation
     
     public void clearSelection(){
         for(Entity e : selection){
@@ -2226,12 +2333,17 @@ public final class MainForm extends javax.swing.JFrame {
         
         return tags;
     }
-    
+    // updateSelection(MouseEvent evt) is called when you click something, like 
+    // a transducer object in the scene. 
     private void updateSelection(MouseEvent evt) {
         final int x = evt.getX(); 
         final int y = evt.getY();
         int tags = Entity.TAG_NONE;
-        
+       
+        // Process the selected component, if any
+        //With the JTabbedPane class, you can have several components, such as panels, share the same space. 
+        //The user chooses which component to view by selecting the tab corresponding to the desired component.
+        //https://docs.oracle.com/javase/tutorial/uiswing/components/tabbedpane.html
         final Component comp = mainTabPanel.getSelectedComponent();
         
         tags = addTagsForSelectionFilter(tags);
@@ -2249,8 +2361,9 @@ public final class MainForm extends javax.swing.JFrame {
                 final Vector3f worldPos = clickRayIntersectObject(e, x, y);
                 trapsPanel.clickAt(worldPos);
             }                           
-        }
+        } // component
         
+        // Process clicked  objects (such transducers t0, t1,t2,...,etc)  in the Frame (MainForm)
         Entity e = scene.pickObject(
                 lastX / (float) panel.getWidth(),
                 1.0f - lastY / (float) panel.getHeight(), tags);
@@ -2260,18 +2373,38 @@ public final class MainForm extends javax.swing.JFrame {
             return;
         }
 
+        // Debug by MJ
+       //Integer.toString(100,8) // prints 144 --octal representation
+       // Integer.toString(100,2) // prints 1100100 --binary representation
+       // Integer.toString(100,16) //prints 64 --Hex representation
+        //Print the modifier for the mouse
+        System.out.print("Mouse Event:");
+        System.out.println(Integer.toString(evt.getModifiersEx(),2) );
+       // System.out.format("Mous. modifier=%x%n",  evt.getModifiersEx() );
+        System.out.print("ActionEvent.CTRL_MASK=");
+        System.out.println( Integer.toString(  ActionEvent.CTRL_MASK,2 ) );
+        System.out.print("evt.getModifiersEx() & ActionEvent.CTRL_MASK=");
+        System.out.println( Integer.toString( evt.getModifiersEx() & ActionEvent.CTRL_MASK,2 ) );
         
+       //public int getModifiersEx()
+ //  evt.getModifiersEx() returns the extended modifier mask for this event. 
+ // Extended modifiers represent the state of all modal keys, such as ALT, CTRL, META, 
+ // and the mouse buttons just after the event occurred
+ 
         if ((evt.getModifiersEx() & ActionEvent.CTRL_MASK) == ActionEvent.CTRL_MASK) {
+            // The Mouse Event under Control Key Held
            if(selection.contains(e)){
                 selection.remove(e);
-                e.selected = false;
+                e.selected = false; 
+                   // clicking on the object already clicked means unclicked
             }else{
                 e.selected = true;
                 selection.add(e);
                 entityToGUI(e); 
             }
-        } else {
-            clearSelection();
+        } // // The Mouse Event under Control Key Held
+        else {
+            clearSelection(); // selection object becomes empty
             e.selected = true;
             selection.add(e);
             entityToGUI(e);

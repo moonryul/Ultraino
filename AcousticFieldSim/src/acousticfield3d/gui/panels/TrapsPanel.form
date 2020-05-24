@@ -136,6 +136,9 @@
         <Property name="text" type="java.lang.String" value="focus"/>
         <Property name="toolTipText" type="java.lang.String" value="focus on the point"/>
       </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="focusCheckActionPerformed"/>
+      </Events>
     </Component>
     <Component class="javax.swing.JRadioButton" name="twinRadio">
       <Properties>
@@ -191,6 +194,9 @@
         <Property name="text" type="java.lang.String" value="calc"/>
         <Property name="toolTipText" type="java.lang.String" value="calculate new traps when clicking on a slice"/>
       </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="calcClickCheckActionPerformed"/>
+      </Events>
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel3">
       <Properties>
@@ -208,6 +214,9 @@
         <Property name="text" type="java.lang.String" value="1500"/>
         <Property name="toolTipText" type="java.lang.String" value="set this number as you wish, it is for getting percentages on the left text"/>
       </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="pressureBTextActionPerformed"/>
+      </Events>
     </Component>
     <Component class="javax.swing.JTextField" name="pressureDivText">
       <Properties>
@@ -221,6 +230,9 @@
         <Property name="text" type="java.lang.String" value="calc force"/>
         <Property name="toolTipText" type="java.lang.String" value="calculates forces as well as pressure"/>
       </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="calcForceCheckActionPerformed"/>
+      </Events>
     </Component>
     <Component class="javax.swing.JTextField" name="xForceText">
       <Properties>
@@ -242,24 +254,36 @@
         <Property name="text" type="java.lang.String" value="calc lap"/>
         <Property name="toolTipText" type="java.lang.String" value="calculates laplacians as well as pressures"/>
       </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="calcLaplacianCheckActionPerformed"/>
+      </Events>
     </Component>
     <Component class="javax.swing.JCheckBox" name="sendCheck">
       <Properties>
         <Property name="text" type="java.lang.String" value="send"/>
         <Property name="toolTipText" type="java.lang.String" value="sends the phases to the devices when clicking on a slice"/>
       </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="sendCheckActionPerformed"/>
+      </Events>
     </Component>
     <Component class="javax.swing.JCheckBox" name="dragCheck">
       <Properties>
         <Property name="text" type="java.lang.String" value="drag"/>
         <Property name="toolTipText" type="java.lang.String" value="calculates &amp; send when dragging the mouse on a slice"/>
       </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="dragCheckActionPerformed"/>
+      </Events>
     </Component>
     <Component class="javax.swing.JCheckBox" name="genAnimCheck">
       <Properties>
         <Property name="text" type="java.lang.String" value="add key frame"/>
         <Property name="toolTipText" type="java.lang.String" value="adds a key frame when clicking on a slice"/>
       </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="genAnimCheckActionPerformed"/>
+      </Events>
     </Component>
   </SubComponents>
 </Form>

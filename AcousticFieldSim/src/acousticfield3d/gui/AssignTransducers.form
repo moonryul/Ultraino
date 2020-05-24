@@ -262,6 +262,9 @@
       <Properties>
         <Property name="text" type="java.lang.String" value="phaseCorr"/>
       </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="phaseCorrectionCheckActionPerformed"/>
+      </Events>
     </Component>
     <Component class="javax.swing.JButton" name="erasePhaseCorrectionButton">
       <Properties>
@@ -341,6 +344,9 @@
       <Properties>
         <Property name="text" type="java.lang.String" value="OnlyPolarity"/>
       </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="onlyPolCheckActionPerformed"/>
+      </Events>
     </Component>
     <Component class="javax.swing.JTextField" name="phaseRefText">
       <Properties>
@@ -398,6 +404,9 @@
       <Properties>
         <Property name="text" type="java.lang.String" value="offsets"/>
       </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="offsetsPhaseExportTextActionPerformed"/>
+      </Events>
     </Component>
   </SubComponents>
 </Form>

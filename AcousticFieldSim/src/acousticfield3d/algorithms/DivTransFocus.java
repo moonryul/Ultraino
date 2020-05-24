@@ -27,6 +27,12 @@ public class DivTransFocus {
        final int nPoints = controlPoints.size();
        final int nTrans = transducers.size();
        
+//MJ: ArrayList inherits AbstractList class and implements List interface.
+//MJ: ArrayList can not be used for primitive types, like int, char, etc. We need a wrapper class for such cases (see this for details).
+//MJ: ArrayList in Java can be seen as similar to vector in C++.
+//MJ: cf: https://stackoverflow.com/questions/6863182/what-is-the-difference-between-iterator-and-iterable-and-how-to-use-them
+
+        
        final ArrayList<Transducer> orderedTrans = new ArrayList<>(transducers);
        final ArrayList<ArrayList<Transducer>> subsets = new ArrayList<>(nPoints);
       for(int i = 0 ; i< nPoints; ++i){
@@ -61,7 +67,7 @@ public class DivTransFocus {
        }
 
        focus(subsets,controlPoints, mf.simulation.getMediumSpeed());
-    }
+    }// class DivTransFocus 
     
     private static void subDivideChecker(final ArrayList<ArrayList<Transducer>> subsets, final ArrayList<Transducer> trans){
         final int nSets = subsets.size();

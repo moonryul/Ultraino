@@ -15,6 +15,14 @@ import javax.swing.JTextField;
  *
  * @author Asier
  */
+
+//The JPanel class provides general-purpose containers for lightweight components.
+//By default, panels don't paint anything except for their background
+//ava.lang.Object
+//  extended by java.awt.Component
+//      extended by java.awt.Container
+ //         extended by javax.swing.JComponent
+ //             extended by javax.swing.JPanel
 public class TransducersPanel extends javax.swing.JPanel {
     final public MainForm mf;
     
@@ -353,7 +361,7 @@ public class TransducersPanel extends javax.swing.JPanel {
     private void powerTextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_powerTextActionPerformed
         mf.updateTransForField(FieldsToChange.powerField, powerText.getText());
     }//GEN-LAST:event_powerTextActionPerformed
-
+// Assign the order to the selected transducers
     private void labelButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_labelButtonActionPerformed
         int number = Integer.parseInt( orderText.getText() );
         for(Entity e: mf.getSelection()){

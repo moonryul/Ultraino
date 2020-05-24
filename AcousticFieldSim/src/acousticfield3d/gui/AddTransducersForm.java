@@ -589,7 +589,7 @@ public class AddTransducersForm extends javax.swing.JFrame {
             }
             cp -= space;
         }
-    }
+    }//gridOrHexArrangement()
     
     public void addTinyLevArrangement(final float radious, final float spread){
         
@@ -675,11 +675,14 @@ public class AddTransducersForm extends javax.swing.JFrame {
                 mf.clearSelection();
                 
                 final Simulation sim2 = (Simulation) FileUtils.readCompressedObject(new File(target));
-                //get the last current transducer.
+             
                 int currentLast = -1;
                 mf.simulation.sortTransducers();
+                
+        
                 final ArrayList<Transducer> currentTrans = mf.simulation.transducers;
                 if (! currentTrans.isEmpty() ){
+                   //get the last current transducer.
                     currentLast = currentTrans.get( currentTrans.size() - 1).getOrderNumber();
                 }
                 
@@ -688,16 +691,17 @@ public class AddTransducersForm extends javax.swing.JFrame {
                     t.setOrderNumber( t.getOrderNumber() + currentLast + 1);
                     addTransducer( t );
                     
+                    // select tye imported transducers
                     t.selected = true;
                     mf.selection.add(t);
                 }
                 mf.simulation.sortTransducers();
-                mf.needUpdate();
+                mf.needUpdate(); //        panel.repaint();
             } catch (IOException ex) {
                 Logger.getLogger(MainForm.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-    }
+    }// importFromSim() 
 
     public JTextField getSizeText() {
         return sizeText;
@@ -725,4 +729,4 @@ public class AddTransducersForm extends javax.swing.JFrame {
 
     
     
-}
+} // class AddTransducersForm
