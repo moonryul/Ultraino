@@ -71,43 +71,6 @@ import javax.swing.JTextField;
 //classes when declared without any specified keyword is recognised as package-private, 
 //means the class can only be used inside the package.
 
- class TransItem {
-    
-    public String name;
-    public float amplitude;
-    public float phase;
-    public int orderNumber;
-    public int driverPinNumber;
-    
- //   public TransItem(String name, float amplitude, float phase, 
- //                int orderNumber, int driverPinNumber) 
- //  {
- //   this.name = name;
- //   this.amplitude = amplitude;
- //   this.phase = phase;
- //   this.orderNumber = orderNumber;
-  //  this.driverPinNumber = driverPinNumber;
-    
-  // }
-    
-    public static void printTable(TransItem[][] table) 
-    {
-         System.out.format("cell of the able: \n");
-         System.out.format("transducer amplitude phase orderNumber driverPinNumber\n");
-                         
-        for (int i =0; i < 8; i++) {
-            for (int j=0; j < 8; j++) {
-                 System.out.format("%4s%4s%4s%3s%3s", table[i][j].name, 
-                          table[i][j].amplitude, table[i][j].phase, 
-                          table[i][j].orderNumber, table[i][j].driverPinNumber);
-                 System.out.format("|");
-            }
-            System.out.format("\n");
-        }
-          
-    }//printTable
-    
- } // TransItem
 
 /**
  *
@@ -180,9 +143,24 @@ public final class MainForm extends javax.swing.JFrame {
         addTransducersForm = new AddTransducersForm(this, simulation, scene);
         algForm = new AlgorithmsForm(this);
       
+        //lass GLJPanel:
+        //      java.lang.Object
+        //             java.awt.Component
+        //                   java.awt.Container
+        //                          javax.swing.JComponent
+        //                                     javax.swing.JPanel
+        //                                              javax.media.opengl.awt.GLJPanel
         GLProfile glprofile = GLProfile.getDefault();
         GLCapabilities glcapabilities = new GLCapabilities(glprofile);
-        gljpanel = new GLJPanel(glcapabilities);
+        gljpanel = new GLJPanel(glcapabilities); 
+        // GLJPanel implements an interface
+        // A higher-level abstraction than GLDrawable which supplies an event based mechanism (GLEventListener) 
+        // for performing OpenGL rendering. A GLAutoDrawable automatically creates a primary rendering context 
+        // which is associated with the GLAutoDrawable for the lifetime of the object. 
+        // This context has the synchronized property enabled so that calls to makeCurrent will block
+        // if the context is current on another thread. This allows the internal GLContext 
+        // for the GLAutoDrawable to be used both by the event based rendering mechanism as well 
+        // by end users directly.
         gljpanel.addGLEventListener( new GLEventListener() {      
             @Override
             public void init( GLAutoDrawable glautodrawable ) {
@@ -1561,56 +1539,7 @@ public final class MainForm extends javax.swing.JFrame {
             simulation.sortAnimations();
             simulation.sortTransducers();
             
-                  
- // MJ, 2020/5/18: debugging
- // Print the informaton about the transducer array
-       
- //  public String name;
- //   public float amplitude; //from 0 to 1
- //   public float phase; //in radians but divided by PI. That is, a phase of 2 means 2PI radians    
-  //  private int orderNumber;
-  //  private int driverPinNumber; //in the driver board
-   
-        TransItem[][] table; // MJ: for debugging, 2020/05/18
-        table = new TransItem[8][8]; // MJ: for debugging,  2020/05/18
-        
-        ArrayList<Transducer> transducers = simulation.getTransducers() ;
-       
-       // if (transducers.isEmpty() ) {
-       //     return;
-       // }
-       // Create objects for object array table
-       for (int k =0; k < 8; k++) {
-            for (int l=0; l < 8; l++) {
-                table[k][l] = new TransItem();
-                 
-            }
-       }
-       
-       //print  the transducers from the simulation
-        for (Transducer t :  transducers) {
-                    String name = t.name;
-                    float amplitude = t.amplitude;
-                    float phase =  t.phase; //in radians but divided by PI. That is, a phase of 2 means 2PI radians    
-                    int orderNumber = t.getOrderNumber();
-                    int driverPinNumber = t.getDriverPinNumber(); //in the driver board
-                  
-                    // get the grid coordinate in the array
-                    int i = orderNumber / 8;
-                    int j = orderNumber % 8;
-                    
-                     table[i][j].name = name ;
-                     table[i][j].amplitude = amplitude ;
-                     table[i][j].phase = phase;
-                     table[i][j].orderNumber = orderNumber ;
-                     table[i][j].driverPinNumber = driverPinNumber;
-                     
-                                
-                                      
-            }//   for (Transducer t :  transducers)
-               
-            TransItem.printTable( table );  
-           //// the end of debugger code
+ 
                     
             initSimulation();
                // initSimulation() using the uploaded simulation created above

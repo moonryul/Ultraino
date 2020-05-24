@@ -215,17 +215,20 @@ public class Renderer {
         Matrix4f viewModel = tv.tempMat42;
         Matrix4f projectionViewModel = tv.tempMat43;
 
+        // All synchronized blocks synchronized on the same object can only have one thread executing 
+        //inside them at a time. All other threads attempting to enter the synchronized block are blocked 
+        //until the thread inside the synchronized block exits the block.
         synchronized (form) {
             calcDistanceToCameraOfEntities();
             sortEntities();
             
-            for (MeshEntity me : scene.getEntities()) {
+            for (MeshEntity me : scene.getEntities()) { // for alll meshes in the scene
 
                 if (!me.isVisible()) {
                     continue;
                 }
 
-                me.getTransform().copyTo(model);
+                me.getTransform().copyTo(model); // modelMatrix
 
                 int shaderId = me.getShader();
                 Shader currentShader = Resources.get().getShader(shaderId);
@@ -256,14 +259,14 @@ public class Renderer {
                     //gl.glCullFace(GL2.GL_FRONT);
                 }
 
-                view.mult(model, viewModel);
-                projection.mult(viewModel, projectionViewModel);
+                view.mult(model, viewModel); // view = Matrix4; view * model => viewModel
+                projection.mult(viewModel, projectionViewModel); // projection.viewModel => ProjectionViewModel
 
                 lastShader.bindAttribs(gl, form.getSimulation(), me);
 
                 lastShader.bindUniforms(gl, scene, this, form.getSimulation(), me, projectionViewModel, viewModel, model, tv.floatBuffer16);
 
-                lastShader.render(gl, form.getSimulation(), me);
+                lastShader.render(gl, form.getSimulation(), me); // render all the meshes in the scene
 
                 lastShader.unbindAttribs(gl, form.getSimulation(), me);
 
@@ -277,7 +280,7 @@ public class Renderer {
         tv.release();
 
         postRender(gl);
-    }
+    }//render(GL2 gl, int w, int h)
         
     void enableCullFace(GL2 gl, boolean enabled){
         if (enabled != cullFace){
